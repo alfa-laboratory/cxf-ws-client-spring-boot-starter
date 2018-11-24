@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import ru.alfalab.cxf.starter.app.TestApplication
 import ru.alfalab.cxf.starter.test.utils.ValidSpecification
 import ru.test.async.AsyncHelloPortType
+import spock.lang.Requires
 
 import javax.xml.ws.WebServiceException
 import java.util.concurrent.ExecutionException
@@ -39,7 +40,18 @@ class CxfConnectionTimeoutSpec extends ValidSpecification {
         ex.cause.class == SocketTimeoutException
     }
 
+    @Requires({ !os.isMacOs() })
     def 'should apply timeout to ASYNC requests'() {
+        when:
+        client.sayHelloAsync('foo', { res -> }).get()
+
+        then:
+        ExecutionException ex = thrown()
+        ex.cause.class == SocketTimeoutException
+    }
+
+    @Requires({ os.isMacOs() })
+    def 'should apply timeout to ASYNC requests for OSX'() {
         when:
         client.sayHelloAsync('foo', { res -> }).get()
 
@@ -47,4 +59,5 @@ class CxfConnectionTimeoutSpec extends ValidSpecification {
         ExecutionException ex = thrown()
         ex.cause.class == ConnectException
     }
+
 }

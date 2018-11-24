@@ -2,6 +2,7 @@
 # This script will build the project.
 
 SWITCHES="--info --stacktrace"
+BASE_PUBLISH_TASKS="asciidoc"
 
 GRADLE_VERSION=$(./gradlew -version | grep Gradle | cut -d ' ' -f 2)
 
@@ -10,15 +11,15 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   ./gradlew build $SWITCHES
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" == "" ]; then
   echo -e 'Build Branch with Snapshot => Branch ['$TRAVIS_BRANCH']'
-  ./gradlew -Prelease.travisci=true snapshot $SWITCHES
+  ./gradlew -Prelease.travisci=true $BASE_PUBLISH_TASKS snapshot $SWITCHES
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
   echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']'
   case "$TRAVIS_TAG" in
   *-rc\.*)
-    ./gradlew -Prelease.travisci=true -Prelease.useLastTag=true candidate $SWITCHES
+    ./gradlew -Prelease.travisci=true -Prelease.useLastTag=true $BASE_PUBLISH_TASKS candidate $SWITCHES
     ;;
   *)
-    ./gradlew -Prelease.travisci=true -Prelease.useLastTag=true final pushImage $SWITCHES
+    ./gradlew -Prelease.travisci=true -Prelease.useLastTag=true $BASE_PUBLISH_TASKS final $SWITCHES
     ;;
   esac
 else

@@ -32,7 +32,9 @@ apply plugin: 'nebula.nebula-bintray-publishing'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
+ext['groovy.version'] = '2.5.4'
 ext {
+    snippetsDir = file('build/generated-snippets')
     javaProjects = [
             project(':autoconfigure'),
             project(':starter'),
@@ -68,16 +70,17 @@ allprojects {
 
             imports {
                 mavenBom 'org.springframework.cloud:spring-cloud-starter-parent:Finchley.RELEASE'
+                mavenBom 'org.spockframework:spock-bom:1.2-groovy-2.5'
             }
 
             dependency 'ch.qos.logback:logback-classic:1.1.7'
             dependency 'net.logstash.logback:logstash-logback-encoder:4.7'
             dependency 'org.projectlombok:lombok:1.18.0'
-            dependency 'org.codehaus.groovy:groovy-all:2.4.7'
+            dependency 'org.codehaus.groovy:groovy-all:2.5.4'
             dependency 'org.testcontainers:testcontainers:1.8.0'
             dependency 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.0.RELEASE'
 
-            dependencySet(group: 'org.apache.cxf', version: '3.1.16') {
+            dependencySet(group: 'org.apache.cxf', version: '3.2.7') {
                 entry 'cxf-core'
                 entry 'cxf-rt-frontend-jaxws'
                 entry 'cxf-rt-transports-http-hc'
@@ -90,8 +93,6 @@ allprojects {
             dependency 'com.google.guava:guava:19.0'
 
             dependency 'com.github.tomakehurst:wiremock-standalone:2.7.1'
-            dependency 'org.spockframework:spock-core:1.1-groovy-2.4'
-            dependency 'org.spockframework:spock-spring:1.1-groovy-2.4'
             dependency 'cglib:cglib-nodep:3.2.2'
         }
     }
