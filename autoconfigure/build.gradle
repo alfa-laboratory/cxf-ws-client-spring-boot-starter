@@ -1,0 +1,25 @@
+dependencies {
+    compileOnly 'org.springframework.boot:spring-boot-starter'
+    compileOnly 'org.springframework.boot:spring-boot-starter-actuator'
+    compileOnly 'org.springframework.boot:spring-boot-configuration-processor', optional
+
+    compileOnly 'org.hibernate:hibernate-validator'
+    compileOnly 'javax.validation:validation-api'
+
+    // ThreadSafe WS Stub generation. ApacheCXF dependencies
+    implementation 'org.apache.cxf:cxf-core',
+            'org.apache.cxf:cxf-rt-frontend-jaxws',
+            'org.apache.cxf:cxf-rt-transports-http-hc',
+            'org.apache.cxf:cxf-rt-ws-security',
+            'org.apache.cxf:cxf-rt-bindings-soap'
+
+    testCompile project(':ws-stub'),
+            'com.github.tomakehurst:wiremock-standalone:2.7.1'
+
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.hibernate:hibernate-validator'
+
+    compileOnly "org.springframework.boot:spring-boot-autoconfigure-processor"
+    annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+}

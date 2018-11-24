@@ -1,0 +1,9 @@
+rootProject.name = 'cxf-consumer-spring-boot'
+
+include 'starter'
+include 'autoconfigure'
+include 'docs'
+include 'ws-stub'
+include 'examples'
+include 'examples:simple-example'
+

@@ -1,0 +1,19 @@
+apply plugin: 'nebula.compile-api'
+
+dependencies {
+  compileApi project(':autoconfigure')
+
+  compile 'org.springframework.boot:spring-boot-starter'
+  compile 'org.springframework.boot:spring-boot-starter-actuator'
+  compile 'org.springframework.boot:spring-boot-configuration-processor', optional
+
+  compile 'org.hibernate:hibernate-validator'
+  compile 'javax.validation:validation-api'
+
+  // ThreadSafe WS Stub generation. ApacheCXF dependencies
+  compile 'org.apache.cxf:cxf-core', optional
+  compile 'org.apache.cxf:cxf-rt-frontend-jaxws', optional
+  compile 'org.apache.cxf:cxf-rt-transports-http-hc', optional
+  compile 'org.apache.cxf:cxf-rt-ws-security', optional
+  compile 'org.apache.cxf:cxf-rt-bindings-soap', optional
+}

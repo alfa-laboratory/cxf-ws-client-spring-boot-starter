@@ -1,0 +1,23 @@
+spring.cxf:
+ packages.skip: ru.test.info.skip
+ clients:
+  -
+   endpoint: http://SOME_HOST/SOME_PATH_TO_WS
+   className: ru.test.info.CorruptedWSInfo12PortType
+  -
+   endpoint: http://SOME_HOST/SOME_PATH_TO_WS
+   className: ru.test.info.WSInfo12PortType
+  -
+   endpoint: http://SOME_HOST/SOME_PATH_TO_WS
+   className: ru.test.async.AsyncHelloPortType
+
+cxf.service:
+ configs:
+  -
+     userID: WSSSS
+     externalSystemCode: XXXXB01
+     externalUserCode: XXX
+     branchNumber: "0000"
+     timeOut: 4000
+     xm: P1
+     name: common

@@ -1,0 +1,265 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.6.RELEASE'
+    }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion",
+                'org.asciidoctor:asciidoctor-gradle-plugin:1.5.8',
+                'com.github.jruby-gradle:jruby-gradle-plugin:1.6.+',
+                'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.+',
+                'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.+'
+
+        classpath 'com.netflix.nebula:nebula-release-plugin:9.0.+',
+                'com.netflix.nebula:nebula-publishing-plugin:9.2.+',
+                'com.netflix.nebula:gradle-extra-configurations-plugin:4.0.+',
+                'com.netflix.nebula:gradle-info-plugin:4.0.+',
+                'com.netflix.nebula:nebula-bintray-plugin:4.0.+'
+
+    }
+}
+
+apply plugin: 'base'
+
+apply plugin: 'nebula.info'
+apply plugin: 'nebula.source-jar'
+apply plugin: 'nebula.optional-base'
+apply plugin: 'nebula.maven-base-publish'
+apply plugin: 'nebula.nebula-bintray-publishing'
+
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+ext {
+    javaProjects = [
+            project(':autoconfigure'),
+            project(':starter'),
+    ]
+    bintrayUserName = (project.hasProperty('BINTRAY_USERNAME') ? project.findProperty('BINTRAY_USERNAME') : System.getenv()['BINTRAY_USERNAME'])
+    bintrayPassword = (project.hasProperty('BINTRAY_PASSWORD') ? project.findProperty('BINTRAY_PASSWORD') : System.getenv()['BINTRAY_PASSWORD'])
+    bintrayRepository = (project.hasProperty('BINTRAY_REPOSITORY') ? project.findProperty('BINTRAY_REPOSITORY') : System.getenv()['BINTRAY_REPOSITORY'])
+}
+
+allprojects {
+    version = version
+    group = 'ru.alfalab.starter.cxf'
+
+    apply plugin: 'idea'
+    apply plugin: 'maven-publish'
+    apply plugin: 'nebula.nebula-release'
+
+    repositories {
+        maven { url 'http://mvn/artifactory/public/' }
+        jcenter()
+    }
+
+    apply plugin: 'idea'
+    apply plugin: 'nebula.info'
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencyManagement {
+        dependencies {
+            dependencySet(group: 'org.springframework.boot', version: springBootVersion) {
+                entry 'spring-boot-starter-test'
+                entry 'spring-boot-starter-actuator'
+            }
+
+            imports {
+                mavenBom 'org.springframework.cloud:spring-cloud-starter-parent:Finchley.RELEASE'
+            }
+
+            dependency 'ch.qos.logback:logback-classic:1.1.7'
+            dependency 'net.logstash.logback:logstash-logback-encoder:4.7'
+            dependency 'org.projectlombok:lombok:1.18.0'
+            dependency 'org.codehaus.groovy:groovy-all:2.4.7'
+            dependency 'org.testcontainers:testcontainers:1.8.0'
+            dependency 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.0.RELEASE'
+
+            dependencySet(group: 'org.apache.cxf', version: '3.1.16') {
+                entry 'cxf-core'
+                entry 'cxf-rt-frontend-jaxws'
+                entry 'cxf-rt-transports-http-hc'
+                entry 'cxf-rt-ws-security'
+                entry 'cxf-rt-bindings-soap'
+            }
+            dependency 'org.hibernate:hibernate-validator:6.0.10.Final'
+            dependency 'javax.validation:validation-api:2.0.1.Final'
+
+            dependency 'com.google.guava:guava:19.0'
+
+            dependency 'com.github.tomakehurst:wiremock-standalone:2.7.1'
+            dependency 'org.spockframework:spock-core:1.1-groovy-2.4'
+            dependency 'org.spockframework:spock-spring:1.1-groovy-2.4'
+            dependency 'cglib:cglib-nodep:3.2.2'
+        }
+    }
+
+    task resolveAllDependencies {
+        doLast {
+            configurations.all { it.resolve() }
+        }
+    }
+}
+
+configure(javaProjects) {
+    apply plugin: 'groovy'
+
+    apply plugin: 'findbugs'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.github.kt3k.coveralls'
+
+    apply plugin: 'nebula.info'
+    apply plugin: 'nebula.optional-base'
+    apply plugin: 'nebula.source-jar'
+    apply plugin: 'nebula.maven-publish'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok',
+                'org.springframework.boot:spring-boot-configuration-processor'
+        annotationProcessor 'org.projectlombok:lombok',
+                'org.springframework.boot:spring-boot-configuration-processor'
+
+        testCompile 'org.codehaus.groovy:groovy-all'
+        testCompile 'org.spockframework:spock-core'
+        testCompile 'org.spockframework:spock-spring'
+        testCompile 'cglib:cglib-nodep'
+    }
+
+
+    compileJava {
+        options.compilerArgs << '-Xlint:unchecked'
+        options.fork = true
+        options.forkOptions.executable = 'javac'
+        options.encoding = 'UTF-8'
+    }
+
+    compileGroovy {
+        options.compilerArgs << '-Xlint:unchecked'
+        options.fork = true
+        options.encoding = 'UTF-8'
+    }
+
+    test {
+        reports {
+            junitXml.enabled = true
+            html.enabled = true
+        }
+        outputs.dir snippetsDir
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+            csv.enabled true
+            html.destination "${buildDir}/jacocoHtml"
+        }
+    }
+
+    findbugs {
+        ignoreFailures = true
+    }
+
+    findbugsMain {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    tasks.withType(FindBugs) {
+        exclude '**/org/apache/thrift/*'
+        classes = classes.filter {
+            !it.path.contains(new File("org/apache/thrift/").path)
+        }
+    }
+
+}
+
+project(':docs') {
+    apply plugin: 'com.github.jruby-gradle.base'
+    apply plugin: 'org.asciidoctor.convert'
+    apply plugin: 'nebula.maven-base-publish'
+
+    asciidoctorj {
+        version = '1.5.8.1'
+    }
+
+    dependencies {
+        gems 'rubygems:asciidoctor-diagram:1.5.11'
+    }
+
+    asciidoctor {
+        inputs.dir snippetsDir
+        dependsOn jrubyPrepare, project(':autoconfigure').test
+        gemPath = jrubyPrepare.outputDir
+
+        attributes 'source-highlighter': 'coderay',
+                'imagesdir': 'images',
+                'toc': 'left',
+                'icons': 'font',
+                'setanchors': 'true',
+                'idprefix': '',
+                'idseparator': '-',
+                'docinfo1': 'true',
+                'toclevels': 5,
+                'starterVersion': project.version.toString(),
+                'snippets': snippetsDir,
+                'example_project_test_dir': project(':examples:simple-example').projectDir
+    }
+
+    task distZip(type: Zip) {
+        dependsOn asciidoctor
+        from "$buildDir/asciidoc/html5/"
+    }
+
+    publishing {
+        publications {
+            nebula(MavenPublication) {
+                artifactId 'starter'
+                artifact distZip {
+                    classifier 'docs'
+                }
+            }
+        }
+    }
+}
+
+// Configure publishing to bintray
+configure(javaProjects + project(':docs') + rootProject) {
+    apply plugin: 'nebula.nebula-bintray-publishing'
+
+    bintray {
+        user = bintrayUserName
+        key = bintrayPassword
+
+        pkg {
+            repo = 'maven-releases'
+            userOrg = 'alfa-laboratory'
+            name = 'cxf-ws-client-spring-boot-starter'
+            websiteUrl = 'https://github.com/alfa-laboratory/${project.name}'
+            issueTrackerUrl = 'https://github.com/alfa-laboratory/${project.name}/issues'
+            vcsUrl = 'https://github.com/alfa-laboratory/${project.name}.git'
+            licenses = ['MIT']
+            labels = ['gradle', 'spring-boot', 'cxf', 'cxf-client', 'cxf-starter', 'soap', 'soap-client', 'soap-starter']
+            publicDownloadNumbers = true
+        }
+    }
+
+    bintrayUpload {
+        onlyIf { !project.version.toString().toUpperCase().endsWith("-SNAPSHOT") }
+    }
+}
+
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/allTests")
+    reportOn javaProjects*.test.binResultsDir
+}
+
+tasks.build.finalizedBy testReport
+tasks.release.dependsOn ':docs:asciidoctor'
+tasks.findByPath(':docs:asciidoctor').dependsOn subprojects*.tasks*.withType(Test)

@@ -1,0 +1,144 @@
+= Apache cxf ws client starter
+Tolkachev Kirill <tolk.kv@gmail.com>;
+{starterVersion} : Incubating
+
+[abstract]
+Use it for making ws stubs spring bean as easy as it possible
+
+== Quick Start
+
+Add next dependencies to your build.gradle file
+
+[source,groovy,subs="attributes+"]
+----
+dependencies {
+    compile 'ru.alfalab.starter.cxf:starter:{starterVersion}'
+}
+----
+
+And add prefered apache cxf version (I used version 3.1.0 for example):
+
+[source,groovy]
+----
+  compile 'org.apache.cxf:cxf-core:3.1.0'
+  compile 'org.apache.cxf:cxf-rt-frontend-jaxws:3.1.0'
+  compile 'org.apache.cxf:cxf-rt-transports-http-hc:3.1.0'
+  compile 'org.apache.cxf:cxf-rt-ws-security:3.1.0'
+  compile 'org.apache.cxf:cxf-rt-bindings-soap:3.1.0'
+}
+----
+
+Enable or disable by `spring.cxf.client.enabled` bool option
+
+== How it works
+
+. Cxf starter configure new `CxfBeanDefinitionPostProcessor` for making beans from each PortType stub with `@WebService` annotation
+. Automatically scan classpath and find all classes with `@WebService` annotatoin. Configure `BeanDefiniton` for this
+stub and pass control to next stage for build bean instance.
+. Each bean has constructed by factory bean - `CxfWsStubBeanFactory`. Factory bean match information about service endpoint by port type classname in `spring.cxf` configuration.
+See example below
+
+[source,yaml]
+----
+spring.cxf:
+ clients:
+  -
+   endpoint: http://ws.srv/TESTSERVICE/TESTSERVICE12
+   className: ru.testservice.TestService12PortType
+  -
+   endpoint: http://ws.srv/TEST/INFO/WSInfo12/WSInfo12PortType
+   className: ru.test.info.WSInfo12PortType
+----
+
+
+By default all services searching in `ru.` package. If you need change it you have to add next properties into your `application.yml`.
+Also you can specify packages you don't want to scan.
+For example:
+
+[source,yaml]
+----
+spring.cxf:
+ packages:
+  scan:
+   - myorg.package
+  skip:
+   - myorg.package.skip
+----
+
+
+And then use apache cxf client by autowire interface *PortType
+
+[NOTE]
+====
+Autowire:
+
+[source,groovy,indent=0]
+.CxfClientExampleUsage.groovy
+----
+include::{example_project_test_dir}/src/test/groovy/ru/alfalab/cxf/starter/test/AppTest.groovy[tags=example-porttype]
+----
+
+====
+
+== Interceptors
+
+PortType stubs can be provided with a list of interceptors. If you want to use this feature, you have to declare your interceptor as Spring Bean in your code
+and annotate it with `@CxfSpecificInterceptor` or `@CxfGlobalInterceptor`. There are 4 interceptor types: `IN`, `IN_FAULT`, `OUT` and `OUT_FAULT`.
+
+For example:
+
+[source,java,indent=0]
+.YourCode.java
+----
+include::{example_project_test_dir}/src/main/groovy/ru/alfalab/cxf/starter/test/App.java[tags=example-global-interceptor]
+----
+
+or
+
+[source,java,indent=0]
+.YourCode.java
+----
+include::{example_project_test_dir}/src/main/groovy/ru/alfalab/cxf/starter/test/App.java[tags=example-specific-interceptor]
+----
+
+<2> Interceptor beans annotated with `@CxfGlobalInterceptor` will be applied to all found stubs.
+
+<3> Interceptor beans annotated with `@CxfSpecificInterceptor` will be applied to stubs specified in `applyFor` annotation member.
+
+== Public API
+
+API not available now
+
+== Troubleshooting
+
+==== jaxws:client problem
+
+[WARNING]
+====
+
+Don't Use apache cxf client short declaraton `jaxws:client`
+
+[source,xml]
+----
+<jaxws:client id="codeErrorMessage">
+...
+</jaxws:client>
+----
+
+It's bad idea, because apache cxf magic made spring boot completely sad and broke bean initialization order
+
+Instead of short definition, use manual bean declaration:
+
+[source,xml]
+----
+<bean id="codeErrorMessage" class="...."
+    factory-bean="clientFactory" factory-method="create"/>
+<bean id="clientFactory" class="org.apache.cxf.jaxws.JaxWsProxyFactoryBean">
+    <property name="serviceClass" value="...."/>
+    <property name="address" value="http://localhost:9002/services/HelloWorld"/>
+</bean>
+----
+
+Equals, and works fine!
+
+====

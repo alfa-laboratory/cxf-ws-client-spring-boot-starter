@@ -1,0 +1,38 @@
+spring.cxf:
+ packages:
+  skip:
+   - ru.test.info.skip
+ clients:
+  -
+   endpoint: http://ws.srv/CS/EQ/WSCustomerBaseInfo/WSCustomerBaseInfo12
+   className: ru.alfabank.ws.cs.eq.wscustomerbaseinfo12.WSCustomerBaseInfo12PortType
+  -
+   endpoint: http://ws.srv/TEST/INFO/WSInfo12/WSInfo12PortType
+   className: ru.test.info.WSInfo12PortType
+  -
+   endpoint: http://ru.test.info.CorruptedWSInfo12PortType
+   className: ru.test.info.CorruptedWSInfo12PortType
+  -
+   endpoint: http://localhost:4567/SayHello
+   className: ru.test.async.AsyncHelloPortType
+   receiveTimeout: 1000
+   connectionTimeout: 1000
+
+ client:
+  enabled: true
+  logging-enabled: true
+  asyncMode: ASYNC_ONLY
+
+cxf.service:
+ configs:
+  -
+     userID: WSAS
+     externalSystemCode: ALSEB01
+     externalUserCode: SENSE
+     branchNumber: "0000"
+     timeOut: 4000
+     xm: S1
+     name: common
+logging:
+  level:
+    org.springframework.context.annotation: trace

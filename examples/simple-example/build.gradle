@@ -1,0 +1,24 @@
+apply plugin: 'groovy'
+
+dependencies {
+    compile project(':starter'),
+            project(':ws-stub'),
+            'org.codehaus.groovy:groovy-all',
+            'org.springframework.boot:spring-boot-starter',
+            'org.springframework.boot:spring-boot-starter-actuator'
+
+    testCompile 'org.spockframework:spock-core',
+            'org.spockframework:spock-spring',
+            'cglib:cglib-nodep'
+
+    // ThreadSafe WS Stub generation. ApacheCXF dependencies
+    compile 'org.apache.cxf:cxf-core',
+            'org.apache.cxf:cxf-rt-frontend-jaxws',
+            'org.apache.cxf:cxf-rt-transports-http',
+            'org.apache.cxf:cxf-rt-ws-security',
+            'org.apache.cxf:cxf-rt-bindings-soap'
+
+    testCompile project(':ws-stub'),
+            'org.springframework.boot:spring-boot-starter-test',
+            'org.hibernate:hibernate-validator'
+}
