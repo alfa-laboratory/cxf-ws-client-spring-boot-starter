@@ -46,8 +46,8 @@ public class CxfClientsProperties {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class ClientConfig {
-    boolean enabled;
-    boolean loggingEnabled;
-    AsyncHTTPConduitFactory.UseAsyncPolicy asyncMode;
+    private boolean enabled;
+    private boolean loggingEnabled;
+    private AsyncHTTPConduitFactory.UseAsyncPolicy asyncMode;
   }
 }

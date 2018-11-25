@@ -8,7 +8,6 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -63,6 +62,7 @@ public class CxfWsStubBeanFactory {
     }
 
     JaxWsProxyFactoryBean jaxWsClientFactoryBean = new JaxWsProxyFactoryBean();
+    jaxWsClientFactoryBean.setConduitSelector();
     jaxWsClientFactoryBean.setBus(bus);
     jaxWsClientFactoryBean.setAddress(clientConfig.getEndpoint());
     jaxWsClientFactoryBean.setServiceClass(portTypeClass);

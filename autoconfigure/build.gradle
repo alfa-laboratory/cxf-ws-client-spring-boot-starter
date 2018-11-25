@@ -11,7 +11,8 @@ dependencies {
             'org.apache.cxf:cxf-rt-frontend-jaxws',
             'org.apache.cxf:cxf-rt-transports-http-hc',
             'org.apache.cxf:cxf-rt-ws-security',
-            'org.apache.cxf:cxf-rt-bindings-soap'
+            'org.apache.cxf:cxf-rt-bindings-soap',
+            'org.apache.cxf:cxf-rt-features-logging'
 
     testCompile project(':ws-stub'),
             'com.github.tomakehurst:wiremock-standalone:2.7.1'

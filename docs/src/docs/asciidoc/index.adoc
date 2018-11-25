@@ -16,16 +16,16 @@ dependencies {
 }
 ----
 
-And add prefered apache cxf version (I used version 3.1.0 for example):
+And add prefered apache cxf version (I used version 3.2.7 for example):
 
 [source,groovy]
 ----
-  compile 'org.apache.cxf:cxf-core:3.1.0'
-  compile 'org.apache.cxf:cxf-rt-frontend-jaxws:3.1.0'
-  compile 'org.apache.cxf:cxf-rt-transports-http-hc:3.1.0'
-  compile 'org.apache.cxf:cxf-rt-ws-security:3.1.0'
-  compile 'org.apache.cxf:cxf-rt-bindings-soap:3.1.0'
-}
+compile 'org.apache.cxf:cxf-core:3.2.7',
+        'org.apache.cxf:cxf-rt-frontend-jaxws:3.2.7',
+        'org.apache.cxf:cxf-rt-transports-http-hc:3.2.7',
+        'org.apache.cxf:cxf-rt-ws-security:3.2.7',
+        'org.apache.cxf:cxf-rt-features-logging:3.2.7',
+        'org.apache.cxf:cxf-rt-bindings-soap:3.2.7'
 ----
 
 Enable or disable by `spring.cxf.client.enabled` bool option

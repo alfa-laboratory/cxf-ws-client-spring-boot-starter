@@ -23,7 +23,7 @@ public class CxfInterceptorConfigurer {
     private final BeanFactory beanFactory;
 
     private final Map<InterceptorType, List<CxfInterceptorAnnotationProcessor.InterceptorInfo>> globalInterceptors;
-    private final Map<Class<?>, Set<CxfInterceptorAnnotationProcessor.InterceptorInfo>> specificInterceptors;
+    private final Map<Class<?>, Set<CxfInterceptorAnnotationProcessor.InterceptorInfo>>         specificInterceptors;
 
     public void configure(JaxWsProxyFactoryBean factoryBean) {
         Class<?> stubClass = factoryBean.getServiceClass();
@@ -46,7 +46,8 @@ public class CxfInterceptorConfigurer {
         );
     }
 
-    private List<Interceptor<? extends Message>> getInterceptorList(JaxWsProxyFactoryBean factoryBean, InterceptorType type) {
+    private List<Interceptor<? extends Message>> getInterceptorList(JaxWsProxyFactoryBean factoryBean,
+                                                                    InterceptorType type) {
         switch (type) {
             case IN:
                 return factoryBean.getInInterceptors();
@@ -56,8 +57,9 @@ public class CxfInterceptorConfigurer {
                 return factoryBean.getOutInterceptors();
             case OUT_FAULT:
                 return factoryBean.getOutFaultInterceptors();
+            default:
+                return emptyList();
         }
-        return emptyList();
     }
 
     private Interceptor<? extends Message> getBean(CxfInterceptorAnnotationProcessor.InterceptorInfo info) {

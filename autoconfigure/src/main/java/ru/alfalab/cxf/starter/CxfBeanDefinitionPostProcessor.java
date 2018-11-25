@@ -37,8 +37,8 @@ public class CxfBeanDefinitionPostProcessor implements BeanDefinitionRegistryPos
 
   @Data
   private static class Packages {
-    List<String> scan = newArrayList("ru");
-    List<String> skip = newArrayList();
+    private List<String> scan = newArrayList("ru");
+    private List<String> skip = newArrayList();
   }
 
   @Override
