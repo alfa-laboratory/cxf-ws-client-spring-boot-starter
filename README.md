@@ -1,5 +1,6 @@
 # Spring Boot Apache CXF WS-Clients starter
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/41608e6858a64f12a0a7d34b4614a36f)](https://app.codacy.com/app/lavcraft/cxf-ws-client-spring-boot-starter?utm_source=github.com&utm_medium=referral&utm_content=alfa-laboratory/cxf-ws-client-spring-boot-starter&utm_campaign=Badge_Grade_Dashboard)
 [![Coverage Status](https://coveralls.io/repos/github/alfa-laboratory/cxf-ws-client-spring-boot-starter/badge.svg?branch=master)](https://coveralls.io/github/alfa-laboratory/cxf-ws-client-spring-boot-starter?branch=master)
 [![Build Status](https://travis-ci.org/alfa-laboratory/cxf-ws-client-spring-boot-starter.svg?branch=master)](https://travis-ci.org/alfa-laboratory/cxf-ws-client-spring-boot-starter)
 [![Download](https://api.bintray.com/packages/alfa-laboratory/maven-releases/cxf-ws-client-spring-boot-starter/images/download.svg) ](https://bintray.com/alfa-laboratory/maven-releases/cxf-ws-client-spring-boot-starter/_latestVersion)
