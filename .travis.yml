@@ -20,6 +20,7 @@ deploy:
   local-dir: build/docs/
   on:
     branch: master
+    tags: true
 env:
   global:
   - secure: Jsqj+uJKdoe9k625XrcxABcIQFcWDrEjGfmRVWq0ezGx9QIzvyx+B53Kp25TqcQIQ1SFQEXTqspK+VeNgl1QkY9dL8qxYMyQBY/XAFMm+PBt95OPAWkU9KiKuXMtXSuKUOHSOn4ggWoTt5WA4gYl1PsSCmD4Yu4h9BHOAUM3EEH4sJHpr2QXX+4TP8suSkvJ1hWsNoaKhZ9xFNkWhf2+tbea5hgV6YfdxdnF+JRsUOgXeV0cD7bBdYPanx+S2/JK3RRfUUcNRwCszggPiArmLs9SwjlKk7DNYJGrxVFvDanNb6cA/cRxKlGeyHoH1uWOR6LsbaxIXt2Lw72iXwvN+w0DaT/mWJFF1NovmJ5fgf2KvvfCcbIdR2l4stMjXbaozQ7mtvRnf3h04S5Wz9/39BufT4dPY3b3eeZuKdgRi58GvPRRqRzIlKeltIxGsVURmWk2KEXICTYVsud+qvVlj1ccK8yuuomCE6vB8e1y9hz/9rplbI5m+UlvaFm5toDKzNJCkXx+R6PnOJLoLQHKGCfCvvAGnmkGQ24973OOt/PjF/xdGi8eEP9deMdOVYzqyfZ2hYpczYDmN8SP14ANZSfQO5C3ZjjANuV3PkqhKWmQ37jbVl6h/07QkcPj2mONqcd+JvhIV55Axxj4iKNv1ldAMBFffeA2Zk5C4/NTsSM=

@@ -62,7 +62,6 @@ public class CxfWsStubBeanFactory {
     }
 
     JaxWsProxyFactoryBean jaxWsClientFactoryBean = new JaxWsProxyFactoryBean();
-    jaxWsClientFactoryBean.setConduitSelector();
     jaxWsClientFactoryBean.setBus(bus);
     jaxWsClientFactoryBean.setAddress(clientConfig.getEndpoint());
     jaxWsClientFactoryBean.setServiceClass(portTypeClass);

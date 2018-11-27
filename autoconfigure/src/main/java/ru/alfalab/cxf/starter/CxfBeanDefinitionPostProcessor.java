@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.isNull;
 import static org.springframework.util.StringUtils.isEmpty;
-import static ru.alfalab.cxf.starter.CxfClientAutoConfiguration.CxfClientFactoryAutoConfiguration.CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME;
 
 /**
  * @author tolkv
@@ -85,7 +84,7 @@ public class CxfBeanDefinitionPostProcessor implements BeanDefinitionRegistryPos
     RootBeanDefinition beanDefinition = new RootBeanDefinition(aClass);
     beanDefinition.setTargetType(aClass);
     beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
-    beanDefinition.setFactoryBeanName(CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME);
+    beanDefinition.setFactoryBeanName(CxfClientAutoConfiguration.CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME);
     beanDefinition.setFactoryMethodName("create");
     return beanDefinition;
   }

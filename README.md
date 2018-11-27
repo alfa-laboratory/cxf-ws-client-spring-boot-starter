@@ -26,7 +26,7 @@ Enable or disable by `spring.cxf.client.enabled` bool option
 
 ## How it works
 
-1.  Cxf starter configure new `CxfBeanDefinitionPostProcessor` for making beans from each PortType stub with `@WebService` annotation
+1. Cxf starter configure new `CxfBeanDefinitionPostProcessor` for making beans from each PortType stub with `@WebService` annotation
 2. Automatically scan classpath and find all classes with `@WebService` annotatoin. Configure `BeanDefiniton` for this stub and pass control to next stage for build bean instance.
 3. Each bean has constructed by factory bean - `CxfWsStubBeanFactory`. Factory bean match information about service endpoint by port type classname in `spring.cxf` configuration. See example below.
 

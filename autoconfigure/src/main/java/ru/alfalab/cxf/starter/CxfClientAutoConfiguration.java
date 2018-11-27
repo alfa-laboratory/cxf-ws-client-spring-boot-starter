@@ -31,7 +31,7 @@ import ru.alfalab.cxf.starter.configuration.DefaultCxfBusConfigurer;
 @EnableConfigurationProperties
 @ConditionalOnProperty(name = "spring.cxf.client.enabled", matchIfMissing = true)
 public class CxfClientAutoConfiguration {
-  static final String CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME = "CxfWsClientProxyFactory";
+  public static final String CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME = "CxfWsClientProxyFactory";
 
   @Bean
   public CxfBeanDefinitionPostProcessor cxfBeanDefinitionPostProcessor(Environment environment) {
