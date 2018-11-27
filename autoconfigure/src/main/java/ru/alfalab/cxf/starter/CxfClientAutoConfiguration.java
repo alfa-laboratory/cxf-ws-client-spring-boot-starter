@@ -31,6 +31,7 @@ import ru.alfalab.cxf.starter.configuration.DefaultCxfBusConfigurer;
 @EnableConfigurationProperties
 @ConditionalOnProperty(name = "spring.cxf.client.enabled", matchIfMissing = true)
 public class CxfClientAutoConfiguration {
+  static final String CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME = "CxfWsClientProxyFactory";
 
   @Bean
   public CxfBeanDefinitionPostProcessor cxfBeanDefinitionPostProcessor(Environment environment) {
@@ -55,7 +56,7 @@ public class CxfClientAutoConfiguration {
 
     @Bean(name = CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME)
     @ConditionalOnMissingBean(name = {CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME})
-    CxfWsStubBeanFactory proxyWsBeanFactory(
+    public CxfWsStubBeanFactory proxyWsBeanFactory(
             CxfClientsProperties cxfClientsProperties,
             Bus bus,
             CxfInterceptorConfigurer interceptorConfigurer
@@ -99,8 +100,5 @@ public class CxfClientAutoConfiguration {
     public static CxfInterceptorAnnotationProcessor cxfInterceptorBFPP() {
       return new CxfInterceptorAnnotationProcessor();
     }
-
-    static final String CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME = "CxfWsClientProxyFactory";
   }
-
 }
