@@ -529,7 +529,7 @@ table.CodeRay td.code>pre{padding:0}
 <div class="details">
 <span id="author" class="author">Tolkachev Kirill</span><br>
 <span id="email" class="email"><a href="mailto:tolk.kv@gmail.com">tolk.kv@gmail.com</a></span><br>
-<span id="revdate">3.3.1</span>
+<span id="revdate">3.3.2</span>
 <br><span id="revremark">Incubating</span>
 </div>
 <div id="toc" class="toc2">
@@ -538,6 +538,11 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#quick-start">Quick Start</a></li>
 <li><a href="#how-it-works">How it works</a></li>
 <li><a href="#interceptors">Interceptors</a></li>
+<li><a href="#customize-client">Customize Client</a>
+<ul class="sectlevel2">
+<li><a href="#client-ssl-configuration">Client SSL Configuration</a></li>
+</ul>
+</li>
 <li><a href="#public-api">Public API</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a>
 <ul class="sectlevel3">
@@ -566,7 +571,7 @@ Use it for making ws stubs spring bean as easy as it possible
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    compile <span class="string"><span class="delimiter">'</span><span class="content">ru.alfalab.starter.cxf:starter:3.3.1</span><span class="delimiter">'</span></span>
+    compile <span class="string"><span class="delimiter">'</span><span class="content">ru.alfalab.starter.cxf:starter:3.3.2</span><span class="delimiter">'</span></span>
 }</code></pre>
 </div>
 </div>
@@ -707,6 +712,60 @@ and annotate it with <code>@CxfSpecificInterceptor</code> or <code>@CxfGlobalInt
 </div>
 </div>
 <div class="sect1">
+<h2 id="customize-client">Customize Client</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you want to configure created cxf client object, you will use next interface:</p>
+</div>
+<div class="listingblock">
+<div class="title">CxfClientConfigurer.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">CxfClientConfigurer</span> {
+    <span class="type">void</span> configure(Client client, WSClient clientDefinition);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See example:</p>
+</div>
+<div class="listingblock">
+<div class="title">YourCode.java</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> CxfClientConfigurer cxfClientConfigurer() {
+  <span class="keyword">return</span> (client, clientDefinition) -&gt; {
+      <span class="comment">// do anything</span>
+      <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">clientDefinition = </span><span class="delimiter">&quot;</span></span> + clientDefinition);
+  };
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="client-ssl-configuration">Client SSL Configuration</h3>
+<div class="paragraph">
+<p>Configure cxf client as cool as you want with <code>CxfClientConfigurer</code>. With SSL too, but you can use predefined <code>CustomSSLContextCxfClientConfigurer</code></p>
+</div>
+<div class="paragraph">
+<p>Use next configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.cxf</span>:
+ <span class="key">clients</span>:
+  -
+   <span class="key">endpoint</span>: <span class="string"><span class="content">http://ws.srv/TESTSERVICE/TESTSERVICE12</span></span>
+   <span class="key">className</span>: <span class="string"><span class="content">ru.testservice.TestService12PortType</span></span>
+   <span class="key">useAnyBeanAsDefaultSSLContext</span>: <span class="string"><span class="content">true</span></span> <span class="comment"># use any SSLContext bean as default ssl configuration for cxf client</span>
+  -
+   <span class="key">endpoint</span>: <span class="string"><span class="content">http://ws.srv/TEST/INFO/WSInfo12/WSInfo12PortType</span></span>
+   <span class="key">className</span>: <span class="string"><span class="content">ru.test.info.WSInfo12PortType</span></span>
+   <span class="key">sslContextBeanName</span>: <span class="string"><span class="content">customSslContextBeanName</span></span> <span class="comment"># use only this bean as client ssl configuration</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="public-api">Public API</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -765,7 +824,7 @@ and annotate it with <code>@CxfSpecificInterceptor</code> or <code>@CxfGlobalInt
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-11-27 10:21:42 UTC
+Last updated 2018-11-28 17:46:08 UTC
 </div>
 </div>
 </body>
