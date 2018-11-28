@@ -7,7 +7,9 @@ import org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.JaxWsClientFactoryBean;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -17,8 +19,16 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import ru.alfalab.cxf.starter.configuration.CustomSSLContextCxfClientConfigurer;
 import ru.alfalab.cxf.starter.configuration.CxfBusConfigurer;
+import ru.alfalab.cxf.starter.configuration.CxfClientConfigurer;
 import ru.alfalab.cxf.starter.configuration.DefaultCxfBusConfigurer;
+
+import javax.net.ssl.SSLContext;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author tolkv
@@ -59,13 +69,22 @@ public class CxfClientAutoConfiguration {
     public CxfWsStubBeanFactory proxyWsBeanFactory(
             CxfClientsProperties cxfClientsProperties,
             Bus bus,
-            CxfInterceptorConfigurer interceptorConfigurer
-    ) {
+            CxfInterceptorConfigurer interceptorConfigurer,
+            Optional<List<CxfClientConfigurer>> clientConfigurers) {
       return new CxfWsStubBeanFactory(
               cxfClientsProperties,
               bus,
-              interceptorConfigurer
-      );
+              interceptorConfigurer,
+              clientConfigurers.orElse(Collections.emptyList()));
+    }
+
+    @Bean
+    @ConditionalOnBean(SSLContext.class)
+    public CxfClientConfigurer tlsClientConfigurer(
+            Map<String, SSLContext> sslContext,
+            CxfClientsProperties cxfClientsProperties
+    ) {
+      return new CustomSSLContextCxfClientConfigurer(sslContext, cxfClientsProperties);
     }
 
     @Bean

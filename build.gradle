@@ -222,7 +222,8 @@ project(':docs') {
                 'toclevels': 5,
                 'starterVersion': project.version.toString(),
                 'snippets': snippetsDir,
-                'example_project_test_dir': project(':examples:simple-example').projectDir
+                'example_project_test_dir': project(':examples:simple-example').projectDir,
+                'autoconfigure_project_test_dir': project(':autoconfigure').projectDir
     }
 
     publishing {

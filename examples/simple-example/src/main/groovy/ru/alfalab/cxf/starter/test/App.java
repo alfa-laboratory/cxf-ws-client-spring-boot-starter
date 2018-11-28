@@ -9,6 +9,7 @@ import ru.alfalab.cxf.starter.annotation.CxfGlobalInterceptor;
 import ru.alfalab.cxf.starter.annotation.CxfSpecificInterceptor;
 import ru.alfalab.cxf.starter.annotation.EnableCxfClient;
 import ru.alfalab.cxf.starter.annotation.InterceptorType;
+import ru.alfalab.cxf.starter.configuration.CxfClientConfigurer;
 import ru.test.info.CorruptedWSInfo12PortType;
 import ru.test.info.WSInfo12PortType;
 
@@ -40,4 +41,13 @@ public class App {
   }
   // end::example-specific-interceptor[]
 
+  // tag::example-specific-client-configurer[]
+  @Bean
+  public CxfClientConfigurer cxfClientConfigurer() {
+    return (client, clientDefinition) -> {
+        // do anything
+        System.out.println("clientDefinition = " + clientDefinition);
+    };
+  }
+  // end::example-specific-client-configurer[]
 }
