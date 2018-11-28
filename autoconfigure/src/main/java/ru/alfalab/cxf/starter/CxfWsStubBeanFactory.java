@@ -8,7 +8,9 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.springframework.beans.factory.BeanCreationException;
+import ru.alfalab.cxf.starter.configuration.CxfClientConfigurer;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,17 +22,19 @@ import static org.springframework.util.StringUtils.isEmpty;
  */
 @Slf4j
 public class CxfWsStubBeanFactory {
-  private final Bus bus;
-  private final CxfInterceptorConfigurer interceptorConfigurer;
+  private final Bus                                        bus;
+  private final CxfInterceptorConfigurer                   interceptorConfigurer;
   private final Map<String, CxfClientsProperties.WSClient> stringClientMap;
+  private final List<CxfClientConfigurer>                  clientConfigurers;
 
   public CxfWsStubBeanFactory(
           CxfClientsProperties cxfClientsProperties,
           Bus bus,
-          CxfInterceptorConfigurer interceptorConfigurer
-  ) {
+          CxfInterceptorConfigurer interceptorConfigurer,
+          List<CxfClientConfigurer> clientConfigurers) {
     this.bus = bus;
     this.interceptorConfigurer = interceptorConfigurer;
+    this.clientConfigurers = clientConfigurers;
 
     log.debug("cxfClientsProperties = {}", cxfClientsProperties);
     // create map with WSStub class name as key
@@ -70,6 +74,19 @@ public class CxfWsStubBeanFactory {
 
     Object wsClient = jaxWsClientFactoryBean.create();
     setTimeouts(wsClient, clientConfig);
+
+    if(wsClient instanceof Client) {
+      Client cxfClient = (Client) wsClient;
+
+      clientConfigurers.forEach(cxfClientConfigurer -> cxfClientConfigurer
+              .configure(cxfClient, clientConfig)
+      );
+    } else {
+      log.warn("Can't configure jax-ws client for class {}. \n" +
+              "Cxf factory produced class which is't derived from org.apache.cxf.endpoint.Client",
+              portTypeClass
+      );
+    }
 
     return wsClient;
   }

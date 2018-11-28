@@ -105,6 +105,44 @@ include::{example_project_test_dir}/src/main/groovy/ru/alfalab/cxf/starter/test/
 
 <3> Interceptor beans annotated with `@CxfSpecificInterceptor` will be applied to stubs specified in `applyFor` annotation member.
 
+== Customize Client
+
+If you want to configure created cxf client object, you will use next interface:
+
+[source,java,indent=0]
+.CxfClientConfigurer.java
+----
+include::{autoconfigure_project_test_dir}/src/main/java/ru/alfalab/cxf/starter/configuration/CxfClientConfigurer.java[tags=client-configurer-interface]
+----
+
+See example:
+
+[source,java,indent=0]
+.YourCode.java
+----
+include::{example_project_test_dir}/src/main/groovy/ru/alfalab/cxf/starter/test/App.java[tags=example-specific-client-configurer]
+----
+
+=== Client SSL Configuration
+
+Configure cxf client as cool as you want with `CxfClientConfigurer`. With SSL too, but you can use predefined `CustomSSLContextCxfClientConfigurer`
+
+Use next configuration:
+
+[source,yaml]
+----
+spring.cxf:
+ clients:
+  -
+   endpoint: http://ws.srv/TESTSERVICE/TESTSERVICE12
+   className: ru.testservice.TestService12PortType
+   useAnyBeanAsDefaultSSLContext: true # use any SSLContext bean as default ssl configuration for cxf client
+  -
+   endpoint: http://ws.srv/TEST/INFO/WSInfo12/WSInfo12PortType
+   className: ru.test.info.WSInfo12PortType
+   sslContextBeanName: customSslContextBeanName # use only this bean as client ssl configuration
+----
+
 == Public API
 
 API not available now

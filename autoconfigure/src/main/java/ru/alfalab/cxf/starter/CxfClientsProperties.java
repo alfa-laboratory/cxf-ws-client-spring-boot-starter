@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.transport.http.asyncclient.AsyncHTTPConduitFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -14,7 +15,7 @@ import java.util.stream.Stream;
 import static org.apache.cxf.transport.http.asyncclient.AsyncHTTPConduitFactory.UseAsyncPolicy.ASYNC_ONLY;
 
 /**
- * @author tolkv
+ * @author Kirill Tolkachev
  * @since 06/04/16
  */
 @Slf4j
@@ -33,6 +34,15 @@ public class CxfClientsProperties {
     return Stream.empty();
   }
 
+  /**
+   * Use {@link javax.net.ssl.SSLContext} as default for all Cxf Clients
+   * If {@link #useAnyBeanAsDefaultSSLContext} is set, starter will find any ssl context bean and set it to clients,
+   * Works only if {@link WSClient#sslContextBeanName} not set
+   *
+   * @see javax.net.ssl.SSLContext
+   */
+  private boolean useAnyBeanAsDefaultSSLContext = false;
+
   @Data
   public static class WSClient {
     private String endpoint;
@@ -40,6 +50,11 @@ public class CxfClientsProperties {
     private String id;
     private Integer connectionTimeout;
     private Integer receiveTimeout;
+    /**
+     * Customize CXF SSL context
+     * @see TLSClientParameters
+     */
+    private String sslContextBeanName;
   }
 
   @Data
