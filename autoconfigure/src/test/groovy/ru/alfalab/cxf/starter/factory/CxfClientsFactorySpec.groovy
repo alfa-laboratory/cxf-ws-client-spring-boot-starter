@@ -25,7 +25,7 @@ class CxfClientsFactorySpec extends Specification {
                     PropertyPlaceholderAutoConfiguration,
                     CxfClientAutoConfiguration
             ))
-            .withPropertyValues(*(CXF_ALL_CLIENTS_VARARG+'spring.cxf.useAnyBeanAsDefaultSSLContext=true'))
+            .withPropertyValues(*(CXF_ALL_CLIENTS_VARARG+'spring.cxf.useAnyBeanAsDefaultSslContext=true'))
 
     def 'should work without ssl context'() {
         expect:

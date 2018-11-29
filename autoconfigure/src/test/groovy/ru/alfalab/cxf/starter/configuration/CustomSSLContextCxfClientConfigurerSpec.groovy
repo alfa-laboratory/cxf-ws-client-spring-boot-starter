@@ -64,7 +64,7 @@ class CustomSSLContextCxfClientConfigurerSpec extends Specification {
 
         then:
         clientMock.getConduit() >> hTTPConduit
-        cxfClientsProperties.isUseAnyBeanAsDefaultSSLContext() >> true
+        cxfClientsProperties.isUseAnyBeanAsDefaultSslContext() >> true
 
         1 * hTTPConduit.setTlsClientParameters(_)
     }
@@ -82,7 +82,7 @@ class CustomSSLContextCxfClientConfigurerSpec extends Specification {
 
         then:
         clientMock.getConduit() >> hTTPConduit
-        cxfClientsProperties.isUseAnyBeanAsDefaultSSLContext() >> true
+        cxfClientsProperties.isUseAnyBeanAsDefaultSslContext() >> true
 
         1 * hTTPConduit.setTlsClientParameters(_) >> { TLSClientParameters p ->
             assert p.getSslContext().is(sslContextMock['someSslContext2'])

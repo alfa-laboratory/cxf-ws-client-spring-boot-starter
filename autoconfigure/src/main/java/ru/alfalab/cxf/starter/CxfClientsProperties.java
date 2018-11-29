@@ -36,12 +36,12 @@ public class CxfClientsProperties {
 
   /**
    * Use {@link javax.net.ssl.SSLContext} as default for all Cxf Clients
-   * If {@link #useAnyBeanAsDefaultSSLContext} is set, starter will find any ssl context bean and set it to clients,
+   * If {@link #useAnyBeanAsDefaultSslContext} is set, starter will find any ssl context bean and set it to clients,
    * Works only if {@link WSClient#sslContextBeanName} not set
    *
    * @see javax.net.ssl.SSLContext
    */
-  private boolean useAnyBeanAsDefaultSSLContext = false;
+  private boolean useAnyBeanAsDefaultSslContext = false;
 
   @Data
   public static class WSClient {

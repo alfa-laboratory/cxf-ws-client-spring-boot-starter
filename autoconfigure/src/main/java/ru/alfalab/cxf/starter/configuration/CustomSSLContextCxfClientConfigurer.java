@@ -43,7 +43,7 @@ public class CustomSSLContextCxfClientConfigurer implements CxfClientConfigurer 
             return sslContextBeanName;
         }
 
-        if (cxfClientsProperties.isUseAnyBeanAsDefaultSSLContext() && !sslContexts.isEmpty()) {
+        if (cxfClientsProperties.isUseAnyBeanAsDefaultSslContext() && !sslContexts.isEmpty()) {
             return sslContexts.entrySet().iterator().next().getKey(); // find first ssl context
         }
 
