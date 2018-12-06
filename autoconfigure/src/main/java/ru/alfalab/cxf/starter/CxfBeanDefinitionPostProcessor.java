@@ -1,6 +1,5 @@
 package ru.alfalab.cxf.starter;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -15,12 +14,11 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.RegexPatternTypeFilter;
+import ru.alfalab.cxf.starter.CxfClientsProperties.Packages;
 
 import javax.jws.WebService;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.isNull;
 import static org.springframework.util.StringUtils.isEmpty;
 
@@ -33,12 +31,6 @@ import static org.springframework.util.StringUtils.isEmpty;
 public class CxfBeanDefinitionPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
   private final Environment environment;
-
-  @Data
-  private static class Packages {
-    private List<String> scan = newArrayList("ru");
-    private List<String> skip = newArrayList();
-  }
 
   @Override
   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {

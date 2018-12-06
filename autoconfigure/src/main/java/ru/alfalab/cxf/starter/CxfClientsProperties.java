@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.cxf.transport.http.asyncclient.AsyncHTTPConduitFactory.UseAsyncPolicy.ASYNC_ONLY;
 
 /**
@@ -26,6 +27,8 @@ public class CxfClientsProperties {
   private List<WSClient> clients;
 
   private ClientConfig client = new ClientConfig(true, true, ASYNC_ONLY);
+
+  private Packages packages = new Packages();
 
   public Stream<WSClient> clients() {
     if (clients != null) {
@@ -64,5 +67,11 @@ public class CxfClientsProperties {
     private boolean enabled;
     private boolean loggingEnabled;
     private AsyncHTTPConduitFactory.UseAsyncPolicy asyncMode;
+  }
+
+  @Data
+  public static class Packages {
+    private List<String> scan = newArrayList("ru");
+    private List<String> skip = newArrayList();
   }
 }
