@@ -18,7 +18,7 @@ class AppTest extends Specification {
     appContext
 
     and: 'WSInfo12 web service bean in context'
-    WSInfo12PortType.isAssignableFrom appContext.getBean('WSInfo12PortType').class
+    WSInfo12PortType.isAssignableFrom appContext.getBean('ru.test.info.WSInfo12PortType').class
   }
 
   @Autowired
