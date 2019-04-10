@@ -29,7 +29,7 @@ class CxfAutoConfigurationSpec extends ValidSpecification {
     applicationContext.getBean 'cxf'
 
     and: 'should init cxf client for WSInfo12PortType interface'
-    WSInfo12PortType.isAssignableFrom applicationContext.getBean('WSInfo12PortType').class
+    WSInfo12PortType.isAssignableFrom applicationContext.getBean('ru.test.info.WSInfo12PortType').class
 
     and: 'should inject port type bean into test class'
     info12PortType

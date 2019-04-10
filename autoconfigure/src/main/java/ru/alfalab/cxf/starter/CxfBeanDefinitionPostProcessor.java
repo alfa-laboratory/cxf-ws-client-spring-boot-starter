@@ -63,7 +63,8 @@ public class CxfBeanDefinitionPostProcessor implements BeanDefinitionRegistryPos
               throw new IllegalStateException("Couldn't find @WebService annotation in a proxy class");
             }
 
-            String name = annotation.name();
+            String name = isEmpty(annotation.name()) ? aClass.getPackage().getName() + "." +portTypeClassName : aClass.getPackage().getName() + "." + annotation.name();
+
             beanDefinitionRegistry.registerBeanDefinition(isEmpty(name) ? portTypeClassName : name, beanDefinition);
 
           } catch (ClassNotFoundException e) {
@@ -78,6 +79,8 @@ public class CxfBeanDefinitionPostProcessor implements BeanDefinitionRegistryPos
     beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
     beanDefinition.setFactoryBeanName(CxfClientAutoConfiguration.CXF_WS_CLIENT_PROXY_FACTORY_DEFAULT_NAME);
     beanDefinition.setFactoryMethodName("create");
+    beanDefinition.setSynthetic(true);
+    beanDefinition.setResourceDescription("Auto generated bean by cxf-ws-client-spring-boot-starter");
     return beanDefinition;
   }
 
