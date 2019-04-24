@@ -1,33 +1,35 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.6.RELEASE'
+        springBootVersion = '2.1.4.RELEASE'
     }
     repositories {
+        maven {
+          url "https://plugins.gradle.org/m2/"
+        }
         jcenter()
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion",
-                'org.asciidoctor:asciidoctor-gradle-plugin:1.5.8',
+                'org.asciidoctor:asciidoctor-gradle-jvm:2.0.+',
                 'com.github.jruby-gradle:jruby-gradle-plugin:1.6.+',
-                'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.+',
-                'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.+'
+                'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.+'
 
-        classpath 'com.netflix.nebula:nebula-release-plugin:9.0.+',
-                'com.netflix.nebula:nebula-publishing-plugin:9.2.+',
-                'com.netflix.nebula:gradle-extra-configurations-plugin:4.0.+',
-                'com.netflix.nebula:gradle-info-plugin:4.0.+',
-                'com.netflix.nebula:nebula-bintray-plugin:4.0.+'
+        classpath 'com.netflix.nebula:nebula-release-plugin:10.0.+',
+                'com.netflix.nebula:nebula-publishing-plugin:10.0.+',
+                'com.netflix.nebula:gradle-info-plugin:5.0.+',
+                'com.netflix.nebula:nebula-bintray-plugin:7.0.+',
+                'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
 
     }
 }
 
 apply plugin: 'base'
 
+apply plugin: 'nebula.nebula-release'
 apply plugin: 'nebula.info'
 apply plugin: 'nebula.source-jar'
 apply plugin: 'nebula.optional-base'
 apply plugin: 'nebula.maven-base-publish'
-apply plugin: 'nebula.nebula-bintray-publishing'
 
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
@@ -44,8 +46,8 @@ ext {
     bintrayRepository = (project.hasProperty('BINTRAY_REPOSITORY') ? project.findProperty('BINTRAY_REPOSITORY') : System.getenv()['BINTRAY_REPOSITORY'])
 }
 
+
 allprojects {
-    version = version
     group = 'ru.alfalab.starter.cxf'
 
     apply plugin: 'idea'
@@ -78,7 +80,6 @@ allprojects {
             dependency 'org.projectlombok:lombok:1.18.0'
             dependency 'org.codehaus.groovy:groovy-all:2.5.4'
             dependency 'org.testcontainers:testcontainers:1.8.0'
-            dependency 'org.springframework.restdocs:spring-restdocs-mockmvc:2.0.0.RELEASE'
 
             dependencySet(group: 'org.apache.cxf', version: '3.2.7') {
                 entry 'cxf-core'
@@ -113,8 +114,8 @@ configure(javaProjects) {
     apply plugin: 'com.github.kt3k.coveralls'
 
     apply plugin: 'nebula.info'
-    apply plugin: 'nebula.optional-base'
     apply plugin: 'nebula.source-jar'
+    apply plugin: 'maven-publish'
     apply plugin: 'nebula.maven-publish'
 
     sourceCompatibility = 1.8
@@ -158,7 +159,7 @@ configure(javaProjects) {
         reports {
             xml.enabled true
             csv.enabled true
-            html.destination "${buildDir}/jacocoHtml"
+            html.enabled true
         }
     }
 
@@ -184,15 +185,16 @@ configure(javaProjects) {
 
 project(':docs') {
     apply plugin: 'com.github.jruby-gradle.base'
-    apply plugin: 'org.asciidoctor.convert'
+    apply plugin: 'org.asciidoctor.jvm.base'
+    apply plugin: 'org.asciidoctor.jvm.convert'
     apply plugin: 'nebula.maven-base-publish'
 
     asciidoctorj {
-        version = '1.5.8.1'
+        version = '2.0.0'
     }
 
     dependencies {
-        gems 'rubygems:asciidoctor-diagram:1.5.11'
+        gems 'rubygems:asciidoctor-diagram:1.5.16'
     }
 
     task distZip(type: Zip) {
@@ -206,24 +208,26 @@ project(':docs') {
     }
 
     asciidoctor {
+      asciidoctorj {
         finalizedBy copyDocs
         inputs.dir snippetsDir
         dependsOn jrubyPrepare, project(':autoconfigure').test
-        gemPath = jrubyPrepare.outputDir
+        gemPaths = [jrubyPrepare.outputDir]
 
         attributes 'source-highlighter': 'coderay',
-                'imagesdir': 'images',
-                'toc': 'left',
-                'icons': 'font',
-                'setanchors': 'true',
-                'idprefix': '',
-                'idseparator': '-',
-                'docinfo1': 'true',
-                'toclevels': 5,
-                'starterVersion': project.version.toString(),
-                'snippets': snippetsDir,
-                'example_project_test_dir': project(':examples:simple-example').projectDir,
-                'autoconfigure_project_test_dir': project(':autoconfigure').projectDir
+          'imagesdir': 'images',
+          'toc': 'left',
+          'icons': 'font',
+          'setanchors': 'true',
+          'idprefix': '',
+          'idseparator': '-',
+          'docinfo1': 'true',
+          'toclevels': 5,
+          'starterVersion': project.version.toString(),
+          'snippets': snippetsDir,
+          'example_project_test_dir': project(':examples:simple-example').projectDir,
+          'autoconfigure_project_test_dir': project(':autoconfigure').projectDir
+      }
     }
 
     publishing {
@@ -240,27 +244,31 @@ project(':docs') {
 
 // Configure publishing to bintray
 configure(javaProjects + project(':docs') + rootProject) {
+//configure(javaProjects) {
     apply plugin: 'nebula.nebula-bintray-publishing'
 
     bintray {
         user = bintrayUserName
-        key = bintrayPassword
+        apiKey = bintrayPassword
 
-        pkg {
-            repo = 'maven-releases'
-            userOrg = 'alfa-laboratory'
-            name = 'cxf-ws-client-spring-boot-starter'
-            websiteUrl = 'https://github.com/alfa-laboratory/${project.name}'
-            issueTrackerUrl = 'https://github.com/alfa-laboratory/${project.name}/issues'
-            vcsUrl = 'https://github.com/alfa-laboratory/${project.name}.git'
-            licenses = ['MIT']
-            labels = ['gradle', 'spring-boot', 'cxf', 'cxf-client', 'cxf-starter', 'soap', 'soap-client', 'soap-starter']
-            publicDownloadNumbers = true
-        }
+        pkgName = 'cxf-ws-client-spring-boot-starter'
+        userOrg = 'alfa-laboratory'
+        repo = 'maven-releases'
+        licenses = ['MIT']
+        labels = ['gradle', 'spring-boot', 'cxf', 'cxf-client', 'cxf-starter', 'soap', 'soap-client', 'soap-starter']
+        websiteUrl = 'https://github.com/alfa-laboratory/${project.name}'
+        issueTrackerUrl = 'https://github.com/alfa-laboratory/${project.name}/issues'
+        vcsUrl = 'https://github.com/alfa-laboratory/${project.name}.git'
     }
 
-    bintrayUpload {
-        onlyIf { !project.version.toString().toUpperCase().endsWith("-SNAPSHOT") }
+    tasks.withType(nebula.plugin.bintray.NebulaBintrayPackageTask) {
+      onlyIf { !project.version.toString().toUpperCase().endsWith("-SNAPSHOT") }
+    }
+    tasks.withType(nebula.plugin.bintray.NebulaBintrayVersionTask) {
+      onlyIf { !project.version.toString().toUpperCase().endsWith("-SNAPSHOT") }
+    }
+    tasks.withType(org.gradle.api.publish.maven.tasks.PublishToMavenRepository) {
+      onlyIf { !project.version.toString().toUpperCase().endsWith("-SNAPSHOT") }
     }
 }
 
