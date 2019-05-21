@@ -69,6 +69,7 @@ public class CxfWsStubBeanFactory {
     jaxWsClientFactoryBean.setBus(bus);
     jaxWsClientFactoryBean.setAddress(clientConfig.getEndpoint());
     jaxWsClientFactoryBean.setServiceClass(portTypeClass);
+    jaxWsClientFactoryBean.setProperties(clientConfig.getProperties());
 
     interceptorConfigurer.configure(jaxWsClientFactoryBean);
 

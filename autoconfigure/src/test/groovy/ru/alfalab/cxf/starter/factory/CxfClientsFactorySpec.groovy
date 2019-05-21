@@ -10,6 +10,9 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.context.annotation.Bean
 import ru.alfalab.cxf.starter.CxfClientAutoConfiguration
+import ru.alfalab.cxf.starter.CxfClientsProperties
+import ru.alfalab.cxf.starter.app.TestApplication
+import ru.test.async.AsyncHelloPortType
 import ru.test.info.WSInfo12PortType
 import spock.lang.Specification
 
@@ -62,6 +65,25 @@ class CxfClientsFactorySpec extends Specification {
             }
         }
     }
+
+  def 'should configure client with mtom'() {
+    expect:
+      runner
+        .withConfiguration(UserConfigurations.of(TestApplication))
+        .withPropertyValues('spring.profiles.active=mtom')
+        .run { context ->
+            def bean = context.getBean(CxfClientsProperties)
+            def clientWithProperties = bean.clients.find { it.properties != null }
+            def asyncHelloPortType = context.getBean(AsyncHelloPortType)
+          verifyAll {
+            assert clientWithProperties
+            assert clientWithProperties.properties['mtom-enabled'] instanceof Boolean
+            assert asyncHelloPortType
+            assert ((asyncHelloPortType as javax.xml.ws.BindingProvider).binding as org.apache.cxf.jaxws.binding.soap.SOAPBindingImpl).setMTOMEnabled()
+          }
+        }
+
+  }
 
     @TestConfiguration
     static class WithoutSslContextConfiguration {

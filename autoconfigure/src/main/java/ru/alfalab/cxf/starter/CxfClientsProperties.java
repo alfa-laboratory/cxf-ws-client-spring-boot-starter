@@ -10,6 +10,7 @@ import org.apache.cxf.transport.http.asyncclient.AsyncHTTPConduitFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -53,6 +54,23 @@ public class CxfClientsProperties {
     private String id;
     private Integer connectionTimeout;
     private Integer receiveTimeout;
+
+    private Map<String, Object> properties;
+
+    public void setProperties(Map<String, Object> original) {
+      for (Map.Entry<String, Object> stringObjectEntry : original.entrySet()) {
+        Object value = stringObjectEntry.getValue();
+        if(value instanceof String) {
+          String stringValue = (String) value;
+          if(stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("false") ) {
+            stringObjectEntry.setValue(Boolean.parseBoolean(stringValue));
+          }
+        }
+      }
+
+      this.properties = original;
+    }
+
     /**
      * Customize CXF SSL context
      * @see TLSClientParameters
