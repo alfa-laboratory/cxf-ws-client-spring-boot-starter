@@ -26,24 +26,46 @@ public class CustomSSLContextCxfClientConfigurer implements CxfClientConfigurer 
         }
 
         HTTPConduit conduit            = (HTTPConduit) cxfClient.getConduit();
-        String      sslContextBeanName = resolveSslContextBeanName(clientDefinition);
 
-        if (sslContextBeanName != null && !sslContexts.isEmpty()) {
-            TLSClientParameters tlsParams = new TLSClientParameters();
-            tlsParams.setSslContext(sslContexts.get(sslContextBeanName));
+        if(isTLS(clientDefinition)) {
+          TLSClientParameters tlsParams = new TLSClientParameters();
+          configureSSLTlsParameter(clientDefinition, tlsParams);
+          tlsParams.setDisableCNCheck(clientDefinition.isDisableCNCheck());
 
-            conduit.setTlsClientParameters(tlsParams);
+          conduit.setTlsClientParameters(tlsParams);
         }
 
     }
 
-    private String resolveSslContextBeanName(WSClient clientDefinition) {
+  private void configureSSLTlsParameter(WSClient clientDefinition,
+                                        TLSClientParameters tlsParams) {
+    if(sslContextIsAvailable(clientDefinition)) {
+      String sslContextBeanName = resolveSslContextBeanName(clientDefinition);
+      tlsParams.setSslContext(sslContexts.get(sslContextBeanName));
+    }
+  }
+
+  private boolean isTLS(WSClient clientDefinition) {
+    return clientDefinition.isDisableCNCheck() ||
+      sslContextIsAvailable(clientDefinition) ||
+      canUseAnySSLContextBean(cxfClientsProperties.isUseAnyBeanAsDefaultSslContext());
+  }
+
+  private boolean canUseAnySSLContextBean(boolean useAnyBeanAsDefaultSslContext) {
+    return useAnyBeanAsDefaultSslContext && !sslContexts.isEmpty();
+  }
+
+  private boolean sslContextIsAvailable(WSClient clientDefinition) {
+    return canUseAnySSLContextBean(clientDefinition.getSslContextBeanName() != null);
+  }
+
+  private String resolveSslContextBeanName(WSClient clientDefinition) {
         String sslContextBeanName = clientDefinition.getSslContextBeanName();
         if (sslContextBeanName != null) {
             return sslContextBeanName;
         }
 
-        if (cxfClientsProperties.isUseAnyBeanAsDefaultSslContext() && !sslContexts.isEmpty()) {
+        if (canUseAnySSLContextBean(cxfClientsProperties.isUseAnyBeanAsDefaultSslContext())) {
             return sslContexts.entrySet().iterator().next().getKey(); // find first ssl context
         }
 

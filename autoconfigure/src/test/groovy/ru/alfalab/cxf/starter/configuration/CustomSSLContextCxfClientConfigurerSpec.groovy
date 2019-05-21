@@ -101,4 +101,39 @@ class CustomSSLContextCxfClientConfigurerSpec extends Specification {
         outputCapture.toString() contains 'conduit type is not supported'
         noExceptionThrown()
     }
+
+  def 'should set disableCnCheck flag when it set in relaxed properties'() {
+    given:
+      def hTTPConduit = Mock(HTTPConduit)
+      clientMock.getConduit() >> hTTPConduit
+
+    when:
+      configurer.configure clientMock, new WSClient(
+        className: 'WSInfoPortType',
+        endpoint: 'http://test',
+        sslContextBeanName: 'someSslContext',
+        disableCNCheck: true
+      )
+    then:
+      1 * hTTPConduit.setTlsClientParameters(_) >> { TLSClientParameters p ->
+        assert p.disableCNCheck
+      }
+  }
+
+  def 'should disable disableCnCheck by default'() {
+    given:
+      def hTTPConduit = Mock(HTTPConduit)
+      clientMock.getConduit() >> hTTPConduit
+
+    when:
+      configurer.configure clientMock, new WSClient(
+        className: 'WSInfoPortType',
+        endpoint: 'http://test',
+        sslContextBeanName: 'someSslContext'
+      )
+    then:
+      1 * hTTPConduit.setTlsClientParameters(_) >> { TLSClientParameters p ->
+        assert !p.disableCNCheck
+      }
+  }
 }

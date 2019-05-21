@@ -57,7 +57,15 @@ public class CxfClientsProperties {
      * Customize CXF SSL context
      * @see TLSClientParameters
      */
+
+
     private String sslContextBeanName;
+
+    /**
+     * Disable check CN in client side
+     * Check by default. Disable only for development purposes
+     */
+    private boolean disableCNCheck = false;
   }
 
   @Data
