@@ -48,15 +48,17 @@ public class CustomSSLContextCxfClientConfigurer implements CxfClientConfigurer 
   private boolean isTLS(WSClient clientDefinition) {
     return clientDefinition.isDisableCNCheck() ||
       sslContextIsAvailable(clientDefinition) ||
-      canUseAnySSLContextBean(cxfClientsProperties.isUseAnyBeanAsDefaultSslContext());
+      canUseAnySSLContextBean(cxfClientsProperties.isUseAnyBeanAsDefaultSslContext(), clientDefinition);
   }
 
-  private boolean canUseAnySSLContextBean(boolean useAnyBeanAsDefaultSslContext) {
-    return useAnyBeanAsDefaultSslContext && !sslContexts.isEmpty();
+  private boolean canUseAnySSLContextBean(boolean useAnyBeanAsDefaultSslContext,
+                                          WSClient clientDefinition) {
+    return (useAnyBeanAsDefaultSslContext && !sslContexts.isEmpty()) ||
+      sslContexts.get(clientDefinition.getSslContextBeanName()) != null;
   }
 
   private boolean sslContextIsAvailable(WSClient clientDefinition) {
-    return canUseAnySSLContextBean(clientDefinition.getSslContextBeanName() != null);
+    return canUseAnySSLContextBean(cxfClientsProperties.isUseAnyBeanAsDefaultSslContext(), clientDefinition);
   }
 
   private String resolveSslContextBeanName(WSClient clientDefinition) {
@@ -65,7 +67,7 @@ public class CustomSSLContextCxfClientConfigurer implements CxfClientConfigurer 
             return sslContextBeanName;
         }
 
-        if (canUseAnySSLContextBean(cxfClientsProperties.isUseAnyBeanAsDefaultSslContext())) {
+        if (canUseAnySSLContextBean(cxfClientsProperties.isUseAnyBeanAsDefaultSslContext(), clientDefinition)) {
             return sslContexts.entrySet().iterator().next().getKey(); // find first ssl context
         }
 

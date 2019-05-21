@@ -136,4 +136,24 @@ class CustomSSLContextCxfClientConfigurerSpec extends Specification {
         assert !p.disableCNCheck
       }
   }
+
+  def 'should set ssl contex when useAnyBeanAsDefaultSslContext is false but sslContextBeanName are existed'() {
+    given:
+      def hTTPConduit = Mock(HTTPConduit)
+    cxfClientsProperties.useAnyBeanAsDefaultSslContext >> false
+
+    when:
+      configurer.configure clientMock, new WSClient(
+        className: 'WSInfoPortType',
+        endpoint: 'http://test',
+        sslContextBeanName: 'someSslContext'
+      )
+
+    then:
+      clientMock.getConduit() >> hTTPConduit
+
+      1 * hTTPConduit.setTlsClientParameters(_) >> { TLSClientParameters p ->
+        assert p.getSslContext().is(sslContextMock['someSslContext'])
+      }
+  }
 }
